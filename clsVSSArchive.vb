@@ -230,7 +230,7 @@ ExitSub:
             RecordEntry(EntryName, Nothing, trcOption.trcApplication)
             Dim SCCServerPath As String = GetRegistrySetting(RootKeyConstants.HKEY_LOCAL_MACHINE, "SOFTWARE\Microsoft\SourceSafe", "SCCServerPath", vbNullString)
             Dim SSARCPath As String = mSupport.FileSystem.ParsePath(SCCServerPath, ParseParts.DrvDir) & "SSARC.exe"
-            Dim TimeStamp As String = VB6.Format(Now, "yyyymmdd")
+            Dim TimeStamp As String = VB6.Format(Now, "yyyymmdd.hhmmss")
             Dim VSSini As String = GetRegistrySetting(RootKeyConstants.HKEY_LOCAL_MACHINE, "SOFTWARE\Microsoft\SourceSafe\Databases", mDatabaseName, vbNullString)
             Dim BaseName As String = mDatabaseName & IIf(mProject <> vbNullString, "." & mProject, vbNullString)
             Dim LogFile As String = String.Format("{0}\{1}.{2}.log", mBackupDir, BaseName, TimeStamp)
