@@ -232,8 +232,9 @@ ExitSub:
             Dim SSARCPath As String = mSupport.FileSystem.ParsePath(SCCServerPath, ParseParts.DrvDir) & "SSARC.exe"
             Dim TimeStamp As String = VB6.Format(Now, "yyyymmdd")
             Dim VSSini As String = GetRegistrySetting(RootKeyConstants.HKEY_LOCAL_MACHINE, "SOFTWARE\Microsoft\SourceSafe\Databases", mDatabaseName, vbNullString)
-            Dim LogFile As String = String.Format("{0}\{1}.{2}.log", mBackupDir, mDatabaseName & IIf(mProject <> vbNullString, "." & mProject, vbNullString), TimeStamp)
-            Dim ArcFile As String = String.Format("{0}\{1}.{2}.ssa", mBackupDir, mDatabaseName & IIf(mProject <> vbNullString, "." & mProject, vbNullString), TimeStamp)
+            Dim BaseName As String = mDatabaseName & IIf(mProject <> vbNullString, "." & mProject, vbNullString)
+            Dim LogFile As String = String.Format("{0}\{1}.{2}.log", mBackupDir, BaseName, TimeStamp)
+            Dim ArcFile As String = String.Format("{0}\{1}.{2}.ssa", mBackupDir, BaseName, TimeStamp)
             Dim strCommandLine() As String = {SSARCPath, LogFile, mAdminID, mPassword, ArcFile, mProject}
             Dim CommandLine As String = String.Format("{0} -d- -s..\ ""-o{1}"" -i- -y{2},{3} ""{4}"" $/{5}", strCommandLine)
 
@@ -250,7 +251,7 @@ ExitSub:
             Dim ArcFileInfo As New FileInfo(ArcFile)
             If ArcFileInfo.Exists Then
                 Dim BackupDirInfo As New DirectoryInfo(BackupDir)
-                Dim BackupFileList() As FileInfo = BackupDirInfo.GetFiles(String.Format("{0}.*.*", mDatabaseName))
+                Dim BackupFileList() As FileInfo = BackupDirInfo.GetFiles(String.Format("{0}.*.*", BaseName))
                 For Each iFileInfo As FileInfo In BackupFileList
                     If DateDiff(DateInterval.DayOfYear, iFileInfo.LastWriteTime, Now) > 28 Then iFileInfo.Delete()
                 Next
