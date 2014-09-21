@@ -1,0 +1,30 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "VSSarchive.NET", "VSSarchive.NET.vbproj", "{F6943D2E-512A-4715-A285-23CA40B0B46D}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SourceCodeControl) = preSolution
+		SccNumberOfProjects = 2
+		SccLocalPath0 = .
+		CanCheckoutShared = false
+		SolutionUniqueID = {C79C75B9-02C6-40C6-840F-24068D8A639E}
+		SccProjectUniqueName1 = VSSarchive.NET.vbproj
+		SccLocalPath1 = .
+		CanCheckoutShared = false
+	EndGlobalSection
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{F6943D2E-512A-4715-A285-23CA40B0B46D}.Debug.ActiveCfg = Debug|.NET
+		{F6943D2E-512A-4715-A285-23CA40B0B46D}.Debug.Build.0 = Debug|.NET
+		{F6943D2E-512A-4715-A285-23CA40B0B46D}.Release.ActiveCfg = Release|.NET
+		{F6943D2E-512A-4715-A285-23CA40B0B46D}.Release.Build.0 = Release|.NET
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal
