@@ -14,6 +14,7 @@ Public Class clsVSSArchive
     Inherits clsBPEBase
     Public Sub New(ByVal objSupport As clsSupport, ByVal args() As String)
         MyBase.New(objSupport, "clsVSSArchive", trcOption.trcApplication)
+        AppName = MyBase.ApplicationName
         GetCommandLine(args)
     End Sub
 
@@ -21,7 +22,7 @@ Public Class clsVSSArchive
     'None at this time...
 #End Region
 #Region "Properties"
-    Private AppName As String = "VSSArchive"
+    Private AppName As String = vbNullString
     Private mAdminID As String = vbNullString
     Private mBackupDir As String = vbNullString
     Private mCL As clsCommandLine = Nothing
@@ -124,10 +125,11 @@ Public Class clsVSSArchive
             With mCL.CommandLineArgs
                 mINIpath = GetRegistrySetting(RootKeyConstants.HKEY_LOCAL_MACHINE, "SOFTWARE\SunGard\" & AppName, "INIfile", vbNullString)
                 'Override INIpath if there's one on the CommandLine...
-                If .Item("INIFILE").Present Then mINIpath = .Item("INIFILE").Value Else mINIpath = String.Format("{0}\{1}.ini", MyBase.ApplicationPath, AppName)
+                If .Item("INIFILE").Present Then mINIpath = .Item("INIFILE").Value
+                If mINIpath = vbNullString Then mINIpath = String.Format("{0}\{1}.ini", MyBase.ApplicationPath, AppName)
                 If mINIpath = vbNullString Then Throw New ArgumentException("""/INI=<INI-File>"" must be specified.")
                 If Dir(mINIpath, FileAttribute.Normal) = vbNullString Then Throw New ArgumentException(String.Format("""{0}"" (INIpath) not found.", mINIpath))
-                If ParsePath(mINIpath, ParseParts.FileNameBase) <> AppName Then AppName = ParsePath(mINIpath, ParseParts.FileNameBase)
+                If mSupport.FileSystem.ParsePath(mINIpath, ParseParts.FileNameBase) <> AppName Then AppName = mSupport.FileSystem.ParsePath(mINIpath, ParseParts.FileNameBase)
 
                 'Trace arguments...
                 If mSupport.Trace.TraceFile = vbNullString Then
@@ -152,7 +154,7 @@ Public Class clsVSSArchive
                 If mPassword = vbNullString Then Throw New ArgumentException("/Password=<AdministratorPassword> must be specified.")
 
                 mProject = IIf(.Item("PROJECT").Present, .Item("PROJECT").Value, GetINIKey(mINIpath, AppName, "Project", vbNullString))
-                If mPassword = vbNullString Then Throw New ArgumentException("/Project=<SourceSafeProjectName> must be specified.")
+                'If mProject = vbNullString Then Throw New ArgumentException("/Project=<SourceSafeProjectName> must be specified.")
             End With
         Catch ex As Exception
             RaiseError()
@@ -221,39 +223,37 @@ ExitSub:
         End While
     End Sub
 #End Region
-    Public Sub VSSArchive()
-        Const EntryName As String = "VSSArchive"
+    Public Sub Archive()
+        Const EntryName As String = "Archive"
 
         Try
             RecordEntry(EntryName, Nothing, trcOption.trcApplication)
-            Dim SCCServerPath As String = GetRegistrySetting(RootKeyConstants.HKEY_LOCAL_MACHINE, "SOFTWARE\SunGard\" & AppName, "SCCServerPath", vbNullString)
-            Dim SSARCPath As String = ParsePath(SCCServerPath, ParseParts.DrvDir) & "SSARC.exe"
+            Dim SCCServerPath As String = GetRegistrySetting(RootKeyConstants.HKEY_LOCAL_MACHINE, "SOFTWARE\Microsoft\SourceSafe", "SCCServerPath", vbNullString)
+            Dim SSARCPath As String = mSupport.FileSystem.ParsePath(SCCServerPath, ParseParts.DrvDir) & "SSARC.exe"
             Dim TimeStamp As String = VB6.Format(Now, "yyyymmdd")
             Dim VSSini As String = GetRegistrySetting(RootKeyConstants.HKEY_LOCAL_MACHINE, "SOFTWARE\Microsoft\SourceSafe\Databases", mDatabaseName, vbNullString)
-            Dim LogFile As String = String.Format("{0}\{1}.{2}.log", mBackupDir, mDatabaseName, TimeStamp)
-            Dim ArcFile As String = String.Format("{0}\{1}.{2}.ssa", mBackupDir, mDatabaseName, TimeStamp)
+            Dim LogFile As String = String.Format("{0}\{1}.{2}.log", mBackupDir, mDatabaseName & IIf(mProject <> vbNullString, "." & mProject, vbNullString), TimeStamp)
+            Dim ArcFile As String = String.Format("{0}\{1}.{2}.ssa", mBackupDir, mDatabaseName & IIf(mProject <> vbNullString, "." & mProject, vbNullString), TimeStamp)
             Dim strCommandLine() As String = {SSARCPath, LogFile, mAdminID, mPassword, ArcFile, mProject}
-            Dim CommandLine As String = String.Format("{0} -d- -s..\ ""-o{1}"" -i- -y{2},{3} ""{4}"" {5}", strCommandLine)
+            Dim CommandLine As String = String.Format("{0} -d- -s..\ ""-o{1}"" -i- -y{2},{3} ""{4}"" $/{5}", strCommandLine)
 
-            ChDrive(ParsePath(SSARCPath, ParseParts.DrvOnly))
-            ChDir(ParsePath(SSARCPath, ParseParts.DrvDirNoSlash))
+            ChDrive(mSupport.FileSystem.ParsePath(SSARCPath, clsFileSystem.ParseParts.DrvOnly))
+            ChDir(mSupport.FileSystem.ParsePath(SSARCPath, ParseParts.DrvDirNoSlash))
 
-            Debug.WriteLine("[VSSarchive]")
-            Debug.WriteLine(CommandLine)
+            LogMessage(mLogFileName, "[VSSarchive]", 0, False)
+            LogMessage(mLogFileName, CommandLine, 0, False)
 
-            Dim ProcessId As Integer = Shell(CommandLine, AppWinStyle.NormalFocus)
+            Dim ProcessId As Integer = Shell(CommandLine, AppWinStyle.Hide)
             If ProcessId <> 0 Then WaitForProcess(ProcessId)
 
             'If we successfully backed-up our database, purge files older than a month (i.e. 28 days)
-            If Dir(ArcFile, FileAttribute.Normal) <> "" Then
-                CmdLine = Dir(BackupDir & "\*.*", FileAttribute.Normal)
-                Do While CmdLine <> ""
-                    Fil = fso.GetFile(BackupDir & "\" & CmdLine)
-                    If DateDiff(Microsoft.VisualBasic.DateInterval.DayOfYear, Fil.DateLastModified, Now) > 28 Then
-                        Fil.Delete()
-                    End If
-                    CmdLine = Dir()
-                Loop
+            Dim ArcFileInfo As New FileInfo(ArcFile)
+            If ArcFileInfo.Exists Then
+                Dim BackupDirInfo As New DirectoryInfo(BackupDir)
+                Dim BackupFileList() As FileInfo = BackupDirInfo.GetFiles(String.Format("{0}.*.*", mDatabaseName))
+                For Each iFileInfo As FileInfo In BackupFileList
+                    If DateDiff(DateInterval.DayOfYear, iFileInfo.LastWriteTime, Now) > 28 Then iFileInfo.Delete()
+                Next
             End If
         Catch ex As Exception
             RaiseError()
@@ -283,7 +283,7 @@ ExitSub:
 
             objVSSArchive = New clsVSSArchive(objSupport, Environment.GetCommandLineArgs())
             With objVSSArchive
-                .VSSArchive()
+                .Archive()
                 System.Environment.ExitCode = 0
             End With
         Catch ex As Exception

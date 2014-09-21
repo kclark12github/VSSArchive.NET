@@ -96,12 +96,12 @@
                 <Reference
                     Name = "SIASSupport.NET"
                     AssemblyName = "SIASSupport.NET"
-                    HintPath = "..\..\Components\SIASSupport.NET\bin\SIASSupport.NET.dll"
+                    HintPath = "..\Components\SIASSupport.NET\bin\SIASSupport.NET.dll"
                 />
                 <Reference
                     Name = "SIASCL.NET"
                     AssemblyName = "SIASCL.NET"
-                    HintPath = "..\..\Components\SIASCL.NET\bin\SIASCL.NET.dll"
+                    HintPath = "..\Components\SIASCL.NET\bin\SIASCL.NET.dll"
                 />
             </References>
             <Imports>
@@ -118,6 +118,7 @@
                 <Import Namespace = "SIASCL" />
                 <Import Namespace = "SIASCL.clsCommandLine" />
                 <Import Namespace = "SIASSupport.clsRegistry" />
+                <Import Namespace = "System.IO" />
                 <Import Namespace = "SIASSupport.clsFileSystem" />
             </Imports>
         </Build>
