@@ -1,30 +1,31 @@
-Microsoft Visual Studio Solution File, Format Version 8.00
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30723.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "VSSarchive.NET", "VSSarchive.NET.vbproj", "{F6943D2E-512A-4715-A285-23CA40B0B46D}"
-	ProjectSection(ProjectDependencies) = postProject
-	EndProjectSection
 EndProject
 Global
-	GlobalSection(SourceCodeControl) = preSolution
-		SccNumberOfProjects = 2
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 1
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = http://gggscp1:8080/tfs/defaultcollection
+		SccProjectUniqueName0 = VSSarchive.NET.vbproj
+		SccProjectName0 = .
+		SccAuxPath0 = http://gggscp1:8080/tfs/defaultcollection
 		SccLocalPath0 = .
-		CanCheckoutShared = false
-		SolutionUniqueID = {C79C75B9-02C6-40C6-840F-24068D8A639E}
-		SccProjectUniqueName1 = VSSarchive.NET.vbproj
-		SccLocalPath1 = .
-		CanCheckoutShared = false
+		SccProvider0 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 	EndGlobalSection
-	GlobalSection(SolutionConfiguration) = preSolution
-		Debug = Debug
-		Release = Release
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(ProjectConfiguration) = postSolution
-		{F6943D2E-512A-4715-A285-23CA40B0B46D}.Debug.ActiveCfg = Debug|.NET
-		{F6943D2E-512A-4715-A285-23CA40B0B46D}.Debug.Build.0 = Debug|.NET
-		{F6943D2E-512A-4715-A285-23CA40B0B46D}.Release.ActiveCfg = Release|.NET
-		{F6943D2E-512A-4715-A285-23CA40B0B46D}.Release.Build.0 = Release|.NET
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F6943D2E-512A-4715-A285-23CA40B0B46D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6943D2E-512A-4715-A285-23CA40B0B46D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6943D2E-512A-4715-A285-23CA40B0B46D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6943D2E-512A-4715-A285-23CA40B0B46D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-	EndGlobalSection
-	GlobalSection(ExtensibilityAddIns) = postSolution
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal
